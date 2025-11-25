@@ -165,13 +165,13 @@ async function queueCommand(options: CLIOptions) {
       const job = await addGenerationJob(options.frameId, { forceRegenerate: options.force });
       logger.info(`✅ Job added to queue: ${job.id}`);
     } else if (options.frameIds) {
-      const job = await addBatchGenerationJob(options.frameIds, { forceRegenerate: options.force });
-      logger.info(`✅ Batch job added to queue: ${job.id} (${options.frameIds.length} frames)`);
+      const jobs = await addBatchGenerationJob(options.frameIds, { forceRegenerate: options.force });
+      logger.info(`✅ Batch jobs added to queue: ${jobs.length} jobs for ${options.frameIds.length} frames`);
     } else if (options.all) {
       const framesWithoutModels = await db.getFramesWithoutModels();
       const frameIds = framesWithoutModels.map((f) => f.id);
-      const job = await addBatchGenerationJob(frameIds, { forceRegenerate: options.force });
-      logger.info(`✅ Batch job added to queue: ${job.id} (${frameIds.length} frames)`);
+      const jobs = await addBatchGenerationJob(frameIds, { forceRegenerate: options.force });
+      logger.info(`✅ Batch jobs added to queue: ${jobs.length} jobs for ${frameIds.length} frames`);
     } else {
       logger.error('Please specify --frame, --frames, or --all');
       process.exit(1);
