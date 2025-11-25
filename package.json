@@ -4,11 +4,11 @@
   "description": "Automated 3D frame model generator for Jay's Frames - Houston Heights custom framing",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "generate": "tsx src/cli.ts",
-    "worker": "tsx src/queue/worker.ts",
+    "generate": "tsx cli.ts",
+    "worker": "tsx queue/worker.ts",
     "test": "jest"
   },
   "keywords": [

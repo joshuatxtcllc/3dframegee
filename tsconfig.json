@@ -15,6 +15,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["*.ts", "*.tsx"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["*.ts", "api/**/*.ts", "config/**/*.ts", "utils/**/*.ts", "types/**/*.ts", "services/**/*.ts", "generators/**/*.ts", "queue/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "integrations-examples.tsx"]
 }
