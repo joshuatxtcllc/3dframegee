@@ -7,6 +7,7 @@ import path from 'path';
 import apiRoutes from './api/routes';
 import { logger } from './utils/logger';
 import { db } from './config/database';
+import { runMigrations, seedSampleData } from './config/migrations';
 
 // Load environment variables
 dotenv.config();
@@ -97,10 +98,13 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 // Graceful shutdown
 async function gracefulShutdown(): Promise<void> {
   logger.info('Shutting down gracefully...');
-  
-  server.close(() => {
-    logger.info('HTTP server closed');
-  });
+
+  const server = (global as any).server;
+  if (server) {
+    server.close(() => {
+      logger.info('HTTP server closed');
+    });
+  }
 
   try {
     await db.close();
@@ -115,15 +119,34 @@ async function gracefulShutdown(): Promise<void> {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-// Start server
-const server = app.listen(PORT, () => {
-  logger.info(`🚀 FrameForge 3D API server running on port ${PORT}`);
-  logger.info(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`   Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
-  logger.info(`   Redis: ${process.env.REDIS_URL || 'localhost:6379'}`);
-  logger.info(`   Storage: ${process.env.STORAGE_TYPE || 's3'}`);
-  logger.info(`\n   🎨 Jay's Frames - Houston Heights Custom Framing`);
-  logger.info(`   📍 218 W 27th St, Houston, TX 77008\n`);
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Run migrations first
+    await runMigrations();
+
+    // Seed sample data if enabled
+    await seedSampleData();
+
+    // Start the server
+    const server = app.listen(PORT, () => {
+      logger.info(`🚀 FrameForge 3D API server running on port ${PORT}`);
+      logger.info(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`   Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+      logger.info(`   Redis: ${process.env.REDIS_URL || 'localhost:6379'}`);
+      logger.info(`   Storage: ${process.env.STORAGE_TYPE || 's3'}`);
+      logger.info(`\n   🎨 Jay's Frames - Houston Heights Custom Framing`);
+      logger.info(`   📍 218 W 27th St, Houston, TX 77008\n`);
+    });
+
+    // Make server available for graceful shutdown
+    (global as any).server = server;
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 export default app;
