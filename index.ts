@@ -15,7 +15,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
 
 // CORS configuration
 app.use(
@@ -45,11 +54,14 @@ if (process.env.STORAGE_TYPE === 'local') {
   logger.info(`Serving static models from ${modelsPath}`);
 }
 
+// Serve frontend UI
+app.use(express.static(path.join(__dirname, '../public')));
+
 // API routes
 app.use('/api', apiRoutes);
 
-// Root endpoint
-app.get('/', (req, res) => {
+// API info endpoint
+app.get('/api/info', (req, res) => {
   res.json({
     service: 'FrameForge 3D',
     description: 'Automated 3D frame model generator for Jay\'s Frames - Houston Heights custom framing',
