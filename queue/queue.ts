@@ -78,17 +78,22 @@ export async function addGenerationJob(
 export async function addBatchGenerationJob(
   frameIds: string[],
   options?: { forceRegenerate?: boolean }
-): Promise<Job<BatchGenerationJobData>> {
-  const job = await modelGenerationQueue.add(
-    'batch-generate',
-    {
-      frameIds,
-      forceRegenerate: options?.forceRegenerate || false,
-    }
+): Promise<Job<ModelGenerationJobData>[]> {
+  // Add individual jobs for each frame in the batch
+  const jobs = await Promise.all(
+    frameIds.map(frameId =>
+      modelGenerationQueue.add(
+        'generate-model',
+        {
+          frameId,
+          forceRegenerate: options?.forceRegenerate || false,
+        }
+      )
+    )
   );
 
-  logger.info(`Added batch generation job for ${frameIds.length} frames: ${job.id}`);
-  return job;
+  logger.info(`Added batch generation jobs for ${frameIds.length} frames`);
+  return jobs;
 }
 
 export async function getJobStatus(jobId: string): Promise<any> {
@@ -102,7 +107,7 @@ export async function getJobStatus(jobId: string): Promise<any> {
     id: job.id,
     name: job.name,
     data: job.data,
-    progress: await job.progress(),
+    progress: job.progress,
     state: await job.getState(),
     attemptsMade: job.attemptsMade,
     failedReason: job.failedReason,

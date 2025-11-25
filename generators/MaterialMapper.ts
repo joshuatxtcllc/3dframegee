@@ -156,28 +156,12 @@ export class MaterialMapper {
 
   /**
    * Create environment map for realistic reflections
+   * NOTE: Commented out as it requires browser DOM APIs (document.createElement)
+   * which are not available in Node.js server environment.
+   * In production, load pre-generated HDR environment maps from file system.
    */
-  createEnvironmentMap(): THREE.CubeTexture {
-    // Create a simple gradient environment map
-    const size = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d')!;
-
-    // Sky gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, size);
-    gradient.addColorStop(0, '#87ceeb'); // Sky blue
-    gradient.addColorStop(1, '#ffffff'); // White
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
-
-    // This is a simplified version - in production, you'd use actual HDR environment maps
-    const texture = new THREE.CanvasTexture(canvas);
-    
-    // For now, return a basic cube texture
-    // In production, load proper HDR environments
-    return texture as any;
-  }
+  // createEnvironmentMap(): THREE.CubeTexture {
+  //   // This method requires browser APIs and cannot be used in Node.js
+  //   // Load HDR environment maps from file system instead
+  // }
 }

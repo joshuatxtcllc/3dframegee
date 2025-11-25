@@ -68,11 +68,11 @@ router.post(
     }
 
     // Add batch job to queue
-    const job = await addBatchGenerationJob(frameIds, { forceRegenerate });
+    const jobs = await addBatchGenerationJob(frameIds, { forceRegenerate });
 
     res.json({
-      message: 'Batch generation job created',
-      jobId: job.id,
+      message: 'Batch generation jobs created',
+      jobIds: jobs.map(j => j.id),
       frameCount: frameIds.length,
       status: 'pending',
     });
@@ -96,11 +96,11 @@ router.post(
     }
 
     const frameIds = framesWithoutModels.map((f) => f.id);
-    const job = await addBatchGenerationJob(frameIds);
+    const jobs = await addBatchGenerationJob(frameIds);
 
     res.json({
-      message: 'Batch generation job created for all missing models',
-      jobId: job.id,
+      message: 'Batch generation jobs created for all missing models',
+      jobIds: jobs.map(j => j.id),
       frameCount: frameIds.length,
       status: 'pending',
     });
