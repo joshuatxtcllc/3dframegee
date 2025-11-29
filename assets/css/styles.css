@@ -1,0 +1,320 @@
+/* Global Styles */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Canvas Container */
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+}
+
+/* Frame Controls Panel */
+#frame-controls {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 320px;
+    max-height: calc(100vh - 40px);
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+}
+
+#frame-controls::-webkit-scrollbar {
+    width: 8px;
+}
+
+#frame-controls::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+#frame-controls::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+#frame-controls::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Headings */
+#frame-controls h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+#frame-controls h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Control Groups */
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+}
+
+/* Range Inputs */
+input[type="range"] {
+    width: calc(100% - 50px);
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+}
+
+/* Range Value Display */
+#frame-controls span[id$="-value"] {
+    display: inline-block;
+    min-width: 35px;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #007bff;
+    text-align: center;
+}
+
+/* Select Dropdowns */
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+select:hover {
+    border-color: #007bff;
+}
+
+select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Color Input */
+input[type="color"] {
+    width: 100%;
+    height: 45px;
+    padding: 5px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+input[type="color"]:hover {
+    border-color: #007bff;
+}
+
+input[type="color"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #007bff;
+}
+
+/* Buttons */
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#generate-frame {
+    width: 100%;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+#generate-frame:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+#generate-frame:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Export Buttons Container */
+#frame-controls > div:last-child {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ecef;
+}
+
+#export-glb,
+#export-usdz {
+    flex: 1;
+    padding: 10px;
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: white;
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+}
+
+#export-glb:hover,
+#export-usdz:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    box-shadow: 0 4px 14px rgba(40, 167, 69, 0.4);
+    transform: translateY(-2px);
+}
+
+#export-glb:active,
+#export-usdz:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+/* Export Buttons Container Flexbox */
+#frame-controls > div:last-child > div {
+    display: flex;
+    gap: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #frame-controls {
+        width: calc(100% - 20px);
+        right: 10px;
+        top: 10px;
+        max-height: calc(100vh - 20px);
+        padding: 15px;
+    }
+
+    #frame-controls h2 {
+        font-size: 20px;
+    }
+
+    input[type="range"] {
+        width: calc(100% - 45px);
+    }
+}
+
+/* Loading Indicator (optional, for future use) */
+.loading {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.loading.active {
+    display: block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#frame-controls {
+    animation: fadeIn 0.4s ease-out;
+}

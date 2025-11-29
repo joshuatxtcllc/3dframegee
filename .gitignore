@@ -36,3 +36,12 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+# Generated 3D models (examples only, commit sample models if needed)
+examples/sample-models/*.glb
+examples/sample-models/*.usdz
+
+# Large texture files (commit placeholders only)
+assets/textures/**/*.jpg
+assets/textures/**/*.png
+!assets/textures/**/README.md
