@@ -1,439 +1,217 @@
-# FrameForge 3D
+# 3D Picture Frame Generator for Jaysframes.com
 
-Automated 3D frame model generator for **Jay's Frames** - Houston Heights premier custom framing boutique.
+A powerful web-based 3D picture frame generator that allows customers to visualize custom frames in real-time and export them in AR-compatible formats (GLB and USDZ).
 
-Generates optimized `.glb` and `.usdz` 3D models from your FrameKraft inventory database for Google AR and iOS Quick Look integration.
+## Features
 
-## 🎯 Features
+- **Real-time 3D Visualization**: Interactive 3D rendering using Three.js
+- **Customizable Parameters**:
+  - Frame dimensions (width, height, depth)
+  - Border width
+  - Multiple material options (wood, metal, gold, silver, etc.)
+  - Optional matte with customizable width and color
+  - Optional glass with adjustable reflectivity
+- **Export Capabilities**:
+  - GLB format (for web and Android AR)
+  - USDZ format (for iOS AR)
+- **AR Integration**: Generated models can be viewed in augmented reality on mobile devices
 
-- **Automated 3D Generation**: Procedurally generates frame models from inventory specs
-- **Dual Format Export**: Creates both `.glb` (Android/Web) and `.usdz` (iOS) files
-- **PBR Materials**: Physically-based rendering with wood, metal, acrylic materials
-- **Multiple Profiles**: Flat, stepped, ornate, float, shadowbox, canvas wrap frames
-- **Background Processing**: Queue-based system for batch generation
-- **SEO Optimization**: Generates schema.org structured data for rich search results
-- **CDN Integration**: Uploads to S3 or local Railway volumes
-- **Production Ready**: Built for Railway deployment with PostgreSQL and Redis
-
-## 🏗️ Architecture
+## Project Structure
 
 ```
-┌─────────────────┐
-│  FrameKraft DB  │  ← Your existing inventory
-└────────┬────────┘
-         │
-    ┌────▼─────┐
-    │   API    │  ← REST endpoints
-    │  Server  │
-    └────┬─────┘
-         │
-    ┌────▼─────┐
-    │  Queue   │  ← BullMQ + Redis
-    └────┬─────┘
-         │
-    ┌────▼─────────┐
-    │   Worker     │  ← Model generation
-    │  - Geometry  │
-    │  - Materials │
-    │  - GLB Export│
-    │  - USDZ Conv │
-    └────┬─────────┘
-         │
-    ┌────▼─────┐
-    │ Storage  │  ← S3 / Railway Volumes
-    └──────────┘
+3dframegee/
+├── index.html                  # Main HTML entry point
+├── README.md                   # Project documentation
+├── LICENSE                     # License information
+├── .gitignore                  # Git ignore rules
+├── assets/
+│   ├── css/
+│   │   └── styles.css         # Application styles
+│   └── textures/              # Texture files for materials
+│       ├── wood/              # Wood textures
+│       ├── metal/             # Metal textures
+│       └── decorative/        # Decorative textures
+├── js/
+│   ├── app.js                 # Main application logic
+│   └── components/
+│       ├── frameGenerator.js  # Frame generation logic
+│       ├── materialLibrary.js # Material management
+│       └── ui.js              # User interface controls
+└── examples/
+    ├── sample-models/         # Example exported models
+    └── screenshots/           # Application screenshots
 ```
 
-## 📦 Installation
+## Installation
 
-### Prerequisites
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/joshuatxtcllc/3dframegee.git
+   cd 3dframegee
+   ```
 
-- Node.js 18+
-- PostgreSQL (your existing FrameKraft database)
-- Redis (for queue system)
-- S3 bucket or Railway storage
+2. Serve the application using a local web server. You can use any of these methods:
 
-### 1. Clone and Install
+   **Using Python 3:**
+   ```bash
+   python -m http.server 8000
+   ```
 
-```bash
-git clone https://github.com/yourusername/frameforge-3d.git
-cd frameforge-3d
-npm install
-```
+   **Using Node.js (http-server):**
+   ```bash
+   npx http-server -p 8000
+   ```
 
-### 2. Configure Environment
+   **Using PHP:**
+   ```bash
+   php -S localhost:8000
+   ```
 
-```bash
-cp .env.example .env
-```
+3. Open your browser and navigate to:
+   ```
+   http://localhost:8000
+   ```
 
-Edit `.env` with your settings:
+## Usage
 
-```env
-# Database (use your existing FrameKraft connection)
-DATABASE_URL=postgresql://user:password@host:5432/framekraft
+### Generating a Custom Frame
 
-# Redis
-REDIS_URL=redis://localhost:6379
+1. **Adjust Frame Dimensions**:
+   - Use the sliders to set width, height, and depth
+   - Adjust border width to your preference
 
-# Storage (S3 recommended for production)
-STORAGE_TYPE=s3
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
-AWS_BUCKET_NAME=jays-frames-3d-models
-CDN_BASE_URL=https://cdn.jaysframes.com
+2. **Choose Material**:
+   - Select from various materials including wood, gold, silver, black, white, and textured options
 
-# Server
-PORT=3000
-NODE_ENV=production
-```
+3. **Configure Matte** (Optional):
+   - Check "Include Matte" to add a matte border
+   - Adjust matte width and color
 
-### 3. Run Database Migration
+4. **Configure Glass** (Optional):
+   - Check "Include Glass" to add a glass layer
+   - Adjust glass reflectivity for desired effect
 
-This adds 3D model columns to your existing FrameKraft `frames` table:
+5. **Generate**:
+   - Click "Generate Frame" to create the 3D model
+   - Use your mouse to rotate, zoom, and pan the camera
 
-```bash
-psql $DATABASE_URL < migrations/001_add_3d_models.sql
-```
+### Exporting Models
 
-### 4. Build
+- **Export GLB**: Click "Export GLB" to download the model in GLB format (compatible with web and Android AR)
+- **Export USDZ**: Click "Export USDZ" to download the model in USDZ format (compatible with iOS AR)
 
-```bash
-npm run build
-```
+### AR Integration
 
-## 🚀 Usage
-
-### Start API Server
-
-```bash
-npm start
-```
-
-Server runs on `http://localhost:3000`
-
-### Start Worker (separate process)
-
-```bash
-npm run worker
-```
-
-The worker processes jobs from the queue in the background.
-
-### CLI Commands
-
-#### Generate Single Frame
-
-```bash
-npm run generate -- generate --frame abc123
-```
-
-#### Generate Multiple Frames
-
-```bash
-npm run generate -- generate --frames abc123,def456,ghi789
-```
-
-#### Generate All Missing Models
-
-```bash
-npm run generate -- generate --all
-```
-
-#### Queue Jobs (requires worker running)
-
-```bash
-npm run generate -- queue --all
-```
-
-#### View Statistics
-
-```bash
-npm run generate -- stats
-```
-
-#### List Frames
-
-```bash
-npm run generate -- list
-```
-
-## 🌐 API Endpoints
-
-### Generate Single Model
-
-```bash
-POST /api/generate-model
-{
-  "frameId": "abc123",
-  "forceRegenerate": false
-}
-```
-
-### Batch Generate
-
-```bash
-POST /api/batch-generate
-{
-  "frameIds": ["abc123", "def456"],
-  "forceRegenerate": false
-}
-```
-
-### Generate All Missing
-
-```bash
-POST /api/generate-all-missing
-```
-
-### Check Job Status
-
-```bash
-GET /api/job-status/:jobId
-```
-
-### Get Frame Models
-
-```bash
-GET /api/frame/:frameId/models
-```
-
-Returns:
-```json
-{
-  "frameId": "abc123",
-  "sku": "WF-001",
-  "name": "Walnut Float Frame",
-  "arEnabled": true,
-  "models": {
-    "glb": "https://cdn.jaysframes.com/frames/abc123/WF-001.glb",
-    "usdz": "https://cdn.jaysframes.com/frames/abc123/WF-001.usdz"
-  },
-  "fileSize": 524288
-}
-```
-
-### List All Frames
-
-```bash
-GET /api/frames?limit=50&offset=0
-```
-
-### Queue Metrics
-
-```bash
-GET /api/queue/metrics
-```
-
-## 🚂 Railway Deployment
-
-### 1. Create Railway Project
-
-```bash
-railway login
-railway init
-```
-
-### 2. Add Services
-
-**Service 1: API Server**
-```bash
-railway add
-# Name: frameforge-api
-# Start command: npm start
-```
-
-**Service 2: Worker**
-```bash
-railway add
-# Name: frameforge-worker  
-# Start command: npm run worker
-```
-
-### 3. Add PostgreSQL
-
-```bash
-railway add
-# Choose: PostgreSQL
-# Link to existing FrameKraft database
-```
-
-### 4. Add Redis
-
-```bash
-railway add
-# Choose: Redis
-```
-
-### 5. Set Environment Variables
-
-In Railway dashboard, add all variables from `.env.example` to both services.
-
-### 6. Deploy
-
-```bash
-git push railway main
-```
-
-## 🎨 Website Integration
-
-### Add to Product Pages
-
+#### For iOS (USDZ):
 ```html
-<!-- Include Google's model-viewer -->
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+<a href="path/to/frame.usdz" rel="ar">
+    <img src="preview.jpg" alt="View in AR">
+</a>
+```
 
-<!-- AR Frame Display -->
+#### For Web/Android (GLB):
+```html
 <model-viewer
-  src="https://cdn.jaysframes.com/frames/abc123/frame.glb"
-  ios-src="https://cdn.jaysframes.com/frames/abc123/frame.usdz"
-  alt="Custom Houston Heights Picture Frame - Walnut Float"
-  ar
-  ar-modes="webxr scene-viewer quick-look"
-  camera-controls
-  environment-image="neutral"
-  poster="https://jaysframes.com/images/frames/frame-poster.jpg"
-  shadow-intensity="1"
-  auto-rotate>
-  
-  <button slot="ar-button" class="ar-button">
-    👋 View in Your Space
-  </button>
+    src="path/to/frame.glb"
+    alt="3D Frame Model"
+    auto-rotate
+    camera-controls
+    ar>
 </model-viewer>
 ```
 
-### SEO Schema Markup
+## Technologies Used
 
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "Walnut Float Frame - Houston Heights Custom Framing",
-  "description": "Museum-quality walnut float frame handcrafted at Jay's Frames in Houston Heights",
-  "image": "https://jaysframes.com/images/frames/walnut-float.jpg",
-  "model": {
-    "@type": "3DModel",
-    "encodingFormat": "model/gltf-binary",
-    "contentUrl": "https://cdn.jaysframes.com/frames/abc123/frame.glb"
-  },
-  "offers": {
-    "@type": "Offer",
-    "availability": "https://schema.org/InStock",
-    "price": "45.00",
-    "priceCurrency": "USD",
-    "seller": {
-      "@type": "LocalBusiness",
-      "name": "Jay's Frames",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "218 W 27th St",
-        "addressLocality": "Houston Heights",
-        "addressRegion": "TX",
-        "postalCode": "77008"
-      }
-    }
-  }
-}
-</script>
-```
+- **Three.js**: 3D graphics library
+- **WebGL**: Hardware-accelerated 3D rendering
+- **JavaScript ES6 Modules**: Modern JavaScript architecture
+- **HTML5 & CSS3**: Modern web standards
 
-## 🔧 Customization
+## Browser Compatibility
 
-### Adding New Profile Types
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
-Edit `src/generators/GeometryGenerator.ts`:
+**Note**: AR features require compatible mobile devices:
+- iOS devices with ARKit support (iPhone 6S and later)
+- Android devices with ARCore support
 
-```typescript
-case ProfileType.YOUR_NEW_TYPE:
-  return this.generateYourNewProfile(profile, outerWidth, outerHeight);
-```
+## Adding Custom Textures
 
-### Custom Materials
+To add custom textures for frame materials:
 
-Edit `src/generators/MaterialMapper.ts`:
+1. Place texture files in the appropriate directory:
+   - Wood textures: `assets/textures/wood/`
+   - Metal textures: `assets/textures/metal/`
+   - Decorative textures: `assets/textures/decorative/`
 
-```typescript
-private getYourMaterial(finish: string, color: string): MaterialTexture {
-  return {
-    material: Material.YOUR_TYPE,
-    albedo_color: color,
-    roughness: 0.5,
-    metallic: 0.0,
-  };
-}
-```
+2. Update `js/components/materialLibrary.js` to load your new textures:
+   ```javascript
+   this.loadTexturedMaterial(
+       'materialName',
+       'assets/textures/category/diffuse_map.jpg',
+       'assets/textures/category/normal_map.jpg',
+       roughness,
+       metalness
+   );
+   ```
 
-## 📊 Performance
+3. Add the new material option to the UI in `js/components/ui.js`
 
-- **Generation Time**: ~2-5 seconds per frame
-- **File Sizes**: 
-  - GLB: 100-500KB (optimized with Draco compression)
-  - USDZ: 150-600KB
-- **Batch Processing**: ~350 frames in ~30 minutes
-- **Storage**: ~200MB for 350 frame inventory
+## Development
 
-## 🐛 Troubleshooting
+### Running in Development Mode
 
-### USDZ Conversion Fails
+The application uses ES6 modules and loads Three.js from a CDN. No build process is required for development.
 
-If USDZ conversion fails, the system falls back to a GLB wrapper. For full USDZ support:
+### Key Components
 
-**Option 1: Install Blender**
-```bash
-apt-get install blender
-```
+- **FrameVisualizerApp** (`app.js`): Main application class managing the 3D scene
+- **FrameGenerator** (`frameGenerator.js`): Handles 3D frame model generation
+- **MaterialLibrary** (`materialLibrary.js`): Manages frame materials and textures
+- **UI** (`ui.js`): Manages user interface and controls
 
-**Option 2: Install Apple's USDPython**
-```bash
-# macOS only
-brew install usd
-```
+## Future Enhancements
 
-### Models Too Large
+- [ ] Support for custom image uploads
+- [ ] Additional frame shapes (oval, round, octagonal)
+- [ ] Advanced lighting controls
+- [ ] Batch export functionality
+- [ ] Backend integration for saving configurations
+- [ ] Social sharing features
+- [ ] Mobile-optimized interface
+- [ ] Material editor for custom textures
+- [ ] Frame shadow customization
+- [ ] Multiple frame styles and profiles
 
-Adjust in `.env`:
-```env
-MAX_FILE_SIZE_MB=2
-DEFAULT_TEXTURE_RESOLUTION=1024
-ENABLE_COMPRESSION=true
-```
+## Contributing
 
-### Database Connection Issues
+Contributions are welcome! Please follow these steps:
 
-Verify connection string:
-```bash
-psql $DATABASE_URL -c "SELECT COUNT(*) FROM frames;"
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📈 Local SEO Benefits
+## License
 
-By implementing AR-enabled 3D frames:
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-- ✅ Rich snippets in Google Search with 3D preview
-- ✅ "View in 3D" button in Google Shopping
-- ✅ Higher click-through rates on mobile
-- ✅ Improved local pack rankings for "Houston Heights custom framing"
-- ✅ Unique feature competitors don't have
+## Support
 
-## 🤝 Support
+For questions or support, please contact:
+- Website: [Jaysframes.com](https://jaysframes.com)
+- Email: support@jaysframes.com
 
-**Jay's Frames**  
-218 W 27th St  
-Houston Heights, TX 77008  
-(832) 893-3794  
+## Acknowledgments
 
-## 📄 License
-
-MIT
-
-## 🙏 Acknowledgments
-
-- Three.js for 3D geometry
-- glTF-Transform for GLB optimization
-- Google Model Viewer for AR display
-- BullMQ for reliable job processing
+- Three.js community for excellent documentation
+- WebGL contributors
+- Open-source texture providers
 
 ---
 
-**Built with ❤️ for Jay's Frames - Houston Heights' Premier Custom Framing Boutique**
+**Made with ❤️ for Jaysframes.com**
